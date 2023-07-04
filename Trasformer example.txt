@@ -1,0 +1,23 @@
+! pip install -q transformers
+
+
+import librosa
+import torch
+from transformers import WhisperProcessor, WhisperForConditionalGeneration
+
+
+tokenizer = WhisperProcessor.from_pretrained("openai/whisper-base")
+model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-base")
+
+#load any audio file of your choice
+speech, rate = librosa.load("sample.wav",sr=16000)
+
+
+input_values = tokenizer(speech,sampling_rate= rate, return_tensors = 'pt').input_features
+
+
+predicted_ids = model.generate(input_values)
+
+transcription = tokenizer.batch_decode(predicted_ids, skip_special_tokens=True)
+
+print(transcription)
